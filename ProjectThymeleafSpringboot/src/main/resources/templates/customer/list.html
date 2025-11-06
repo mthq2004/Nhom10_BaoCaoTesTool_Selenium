@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Khách hàng</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .list-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .list-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .list-card h2 {
+            text-align: center;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .controls-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-form input {
+            flex: 1;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            padding: 10px 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-form input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+
+        .search-form button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-form button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-bottom: 2px solid var(--border);
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 700;
+            color: #334155;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid var(--border);
+            color: #475569;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+        }
+
+        .action-link {
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .action-edit {
+            background: var(--info);
+        }
+
+        .action-edit:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .action-delete {
+            background: var(--danger);
+        }
+
+        .action-delete:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .list-card {
+                padding: 1.5rem;
+            }
+
+            .controls-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+
+            .action-link {
+                padding: 4px 8px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="list-container">
+    <div class="list-card">
+        <h2>👥 Danh sách Khách hàng</h2>
+
+        <!-- Controls -->
+        <div class="controls-section">
+            <form th:action="@{/customer/search}" method="get" class="search-form">
+                <input type="text" name="keyword" placeholder="🔍 Tìm theo tên khách hàng" th:value="${keyword}">
+                <button type="submit">🔎 Tìm</button>
+            </form>
+
+            <a th:href="@{/customer/add}" class="btn-add">
+                ➕ Thêm khách hàng
+            </a>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper" th:if="${!#lists.isEmpty(customers)}">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width: 60px;">ID</th>
+                    <th>Tên khách hàng</th>
+                    <th style="width: 130px;">Ngày tạo</th>
+                    <th style="width: 150px;">Thao tác</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="c : ${customers}">
+                    <td><strong th:text="${c.id}"></strong></td>
+
+                    <td>
+                        <a th:href="@{'/customer/' + ${c.id}}" style="color: var(--primary); text-decoration: none; font-weight: 600;"
+                           th:text="${c.name}"></a>
+                    </td>
+
+                    <td th:text="${#temporals.format(c.customerSince, 'dd/MM/yyyy')}"></td>
+
+                    <td>
+                        <a class="action-link action-edit" th:href="@{'/customer/edit/' + ${c.id}}">
+                            ✏️ Sửa
+                        </a>
+                        <a class="action-link action-delete"
+                           th:href="@{'/customer/delete/' + ${c.id}}"
+                           onclick="return confirm('Bạn có chắc muốn xóa khách hàng này không?')">
+                            🗑️ Xóa
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" th:if="${#lists.isEmpty(customers)}">
+            <div style="font-size: 2rem; margin-bottom: 10px;">😢</div>
+            <p>Không có khách hàng nào</p>
+            <a th:href="@{/customer/add}" class="btn-add" style="margin-top: 15px; display: inline-block;">
+                ➕ Thêm khách hàng đầu tiên
+            </a>
+        </div>
+
+        <a href="/" class="back-link">⬅ Quay lại Trang chủ</a>
+    </div>
+</div>
+
+</body>
+</html>

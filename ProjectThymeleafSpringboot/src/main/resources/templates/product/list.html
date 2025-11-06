@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📦 Danh sách sản phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --danger: #ef4444;
+            --success: #10b981;
+            --info: #3b82f6;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .main-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .main-card h2 {
+            margin: 0;
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 1.8rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-nav {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .user-section {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 12px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .user-greeting {
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .user-name {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            border: none;
+            color: white;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .admin-section {
+            margin-bottom: 2rem;
+            text-align: right;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-bottom: 2px solid var(--border);
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 700;
+            color: #334155;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid var(--border);
+            color: #475569;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+        }
+
+        .product-name {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .product-name:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .stock-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .stock-available {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #166534;
+        }
+
+        .stock-unavailable {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+        }
+
+        .action-button {
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin: 2px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-edit {
+            background: var(--info);
+        }
+
+        .btn-edit:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: var(--danger);
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-add-cart {
+            background: linear-gradient(135deg, var(--success), #059669);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .btn-add-cart:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+        }
+
+        .alert {
+            border-radius: 12px !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-close {
+            filter: brightness(0) saturate(100%);
+        }
+
+        @media (max-width: 768px) {
+            .main-card {
+                padding: 1.5rem;
+            }
+
+            .header-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .main-card h2 {
+                font-size: 1.3rem;
+                margin-bottom: 0;
+            }
+
+            .nav-buttons {
+                width: 100%;
+            }
+
+            .user-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+
+            .action-button {
+                padding: 4px 8px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Chat Button - Góc phải dưới */
+        .ai-chatbox-button {
+            position: fixed !important;
+            bottom: 30px !important;
+            right: 30px !important; /* 👈 Đổi từ left sang right */
+            width: 70px !important;
+            height: 70px !important;
+            background: linear-gradient(135deg, #ff6b6b, #ff4757) !important;
+            border-radius: 50% !important;
+            border: 5px solid white !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 2rem !important;
+            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.4) !important;
+            transition: all 0.3s ease !important;
+            z-index: 9999 !important;
+        }
+
+        .ai-chatbox-button:hover {
+            transform: scale(1.1) !important;
+            box-shadow: 0 15px 40px rgba(255, 71, 87, 0.6) !important;
+        }
+
+        /* Chat Container - Hiện lên bên phải */
+        .ai-chatbox-container {
+            position: fixed !important;
+            bottom: 120px !important;
+            right: 30px !important; /* 👈 Đổi từ left sang right */
+            width: 380px !important;
+            height: 500px !important;
+            background: white !important;
+            border-radius: 16px !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            z-index: 9999 !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: scale(0.9) translateY(20px) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .ai-chatbox-container.active {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: scale(1) translateY(0) !important;
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 768px) {
+            .ai-chatbox-container {
+                width: 90vw !important;
+                height: 400px !important;
+                bottom: 110px !important;
+                right: 5vw !important; /* 👈 thay vì left */
+            }
+
+            .ai-chatbox-button {
+                bottom: 20px !important;
+                right: 20px !important;
+            }
+        }
+
+
+        .chatbox-header {
+            background: linear-gradient(135deg, #ff6b6b, #ff4757) !important;
+            color: white !important;
+            padding: 20px !important;
+            border-radius: 16px 16px 0 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+
+        .chatbox-header h3 {
+            margin: 0 !important;
+            font-size: 1rem !important;
+            font-weight: 700 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+        }
+
+        .chatbox-close-btn {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: none !important;
+            color: white !important;
+            font-size: 1.2rem !important;
+            cursor: pointer !important;
+            width: 30px !important;
+            height: 30px !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.2s ease !important;
+            padding: 0 !important;
+        }
+
+        .chatbox-close-btn:hover {
+            background: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .chatbox-messages {
+            flex: 1 !important;
+            overflow-y: auto !important;
+            padding: 20px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+            background: #f8f9fa !important;
+        }
+
+        .chatbox-message {
+            display: flex !important;
+            gap: 8px !important;
+            animation: slideIn 0.3s ease !important;
+        }
+
+        .chatbox-message.user {
+            justify-content: flex-end !important;
+        }
+
+        .chatbox-message.ai {
+            justify-content: flex-start !important;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-bubble {
+            max-width: 70% !important;
+            padding: 12px 16px !important;
+            border-radius: 12px !important;
+            word-wrap: break-word !important;
+            line-height: 1.4 !important;
+            font-size: 0.95rem !important;
+        }
+
+        .message-bubble.user {
+            background: linear-gradient(135deg, #ff6b6b, #ff4757) !important;
+            color: white !important;
+            border-radius: 12px 4px 12px 12px !important;
+        }
+
+        .message-bubble.ai {
+            background: #e9ecef !important;
+            color: #333 !important;
+            border-radius: 4px 12px 12px 12px !important;
+        }
+
+        .chatbox-input-area {
+            padding: 15px !important;
+            border-top: 1px solid #e9ecef !important;
+            display: flex !important;
+            gap: 8px !important;
+        }
+
+        .chatbox-input-area input {
+            flex: 1 !important;
+            border: 1px solid #ddd !important;
+            border-radius: 8px !important;
+            padding: 10px 12px !important;
+            font-size: 0.95rem !important;
+            font-family: inherit !important;
+            transition: border-color 0.2s ease !important;
+        }
+
+        .chatbox-input-area input:focus {
+            outline: none !important;
+            border-color: #ff6b6b !important;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1) !important;
+        }
+
+        .chatbox-send-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff4757) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 8px !important;
+            width: 40px !important;
+            height: 40px !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 1.1rem !important;
+            transition: all 0.2s ease !important;
+            padding: 0 !important;
+        }
+
+        .chatbox-send-btn:hover {
+            transform: scale(1.05) !important;
+        }
+
+        .chatbox-send-btn:active {
+            transform: scale(0.95) !important;
+        }
+
+        @media (max-width: 768px) {
+            .ai-chatbox-container {
+                width: 90vw !important;
+                height: 400px !important;
+                bottom: 110px !important;
+                left: 5vw !important;
+            }
+
+            .ai-chatbox-button {
+                bottom: 20px !important;
+                left: 20px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-wrapper">
+    <div class="main-card">
+        <!-- Success Alert -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 12px; border: none; background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #166534; margin-bottom: 1.5rem; font-weight: 600; padding: 15px 20px;">
+            <strong>🎉</strong> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="header-row">
+            <h2>📦 Danh sách sản phẩm</h2>
+            <div class="nav-buttons">
+                <a th:href="@{/category}" class="btn-nav">📚 Danh mục</a>
+                <a th:href="@{/cart}" class="btn-nav">🛍️ Giỏ hàng</a>
+                <a th:href="@{/order}" class="btn-nav">📋 Đơn hàng</a>
+            </div>
+        </div>
+
+        <!-- User Section -->
+        <div class="user-section">
+            <div class="user-greeting" th:if="${#authorization.expr('isAuthenticated()')}">
+                👋 Xin chào, <span class="user-name" th:text="${#authentication.name}"></span>
+            </div>
+            <div class="user-greeting" th:unless="${#authorization.expr('isAuthenticated()')}">
+                ⚠️ Bạn chưa đăng nhập
+            </div>
+
+            <div th:if="${#authorization.expr('isAuthenticated()')}" style="margin: 0;">
+                <form th:action="@{/logout}" method="post" style="margin: 0; display:inline-block;">
+                    <button type="submit" class="btn-logout">🚪 Đăng xuất</button>
+                </form>
+            </div>
+            <div th:unless="${#authorization.expr('isAuthenticated()')}" style="margin: 0;">
+                <a th:href="@{/login}" class="btn-logout" style="display:inline-block; text-decoration:none; text-align:center;">🔐 Đăng nhập</a>
+            </div>
+        </div>
+
+        <!-- Admin Add Button -->
+        <div class="admin-section" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+            <a th:href="@{/product/add}" class="btn-add">➕ Thêm sản phẩm</a>
+        </div>
+
+        <!-- Search & Filter Section -->
+        <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 12px; padding: 20px; margin-bottom: 2rem; border: 1px solid var(--border);">
+            <h4 style="color: #1e293b; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                🔍 Tìm kiếm & Lọc nâng cao
+            </h4>
+            
+            <form th:action="@{/product/search/advanced}" method="get" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 15px;">
+                <div style="flex: 1; min-width: 200px;">
+                    <input type="text" name="name" placeholder="🔎 Tên sản phẩm..." class="form-control" 
+                           th:value="${searchName}" style="border-radius: 8px; border: 1px solid var(--border); padding: 10px 12px; font-size: 0.95rem;">
+                </div>
+
+                <div style="flex: 1; min-width: 180px;">
+                    <select name="categoryId" class="form-control" style="border-radius: 8px; border: 1px solid var(--border); padding: 10px 12px; font-size: 0.95rem;">
+                        <option value="" th:selected="${searchCategoryId} == null">-- Chọn danh mục --</option>
+                        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"
+                                th:selected="${searchCategoryId} != null and ${searchCategoryId} == ${c.id}"></option>
+                    </select>
+                </div>
+                
+                <div style="flex: 1; min-width: 150px;">
+                    <input type="number" name="minPrice" placeholder="Giá tối thiểu" class="form-control" 
+                           th:value="${filterMinPrice}" step="1000" min="0" style="border-radius: 8px; border: 1px solid var(--border); padding: 10px 12px; font-size: 0.95rem;">
+                </div>
+                
+                <div style="flex: 1; min-width: 150px;">
+                    <input type="number" name="maxPrice" placeholder="Giá tối đa" class="form-control" 
+                           th:value="${filterMaxPrice}" step="1000" min="0" style="border-radius: 8px; border: 1px solid var(--border); padding: 10px 12px; font-size: 0.95rem;">
+                </div>
+                
+                <button type="submit" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; color: white; border-radius: 8px; padding: 10px 18px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; white-space: nowrap;">
+                    🔎 Tìm kiếm
+                </button>
+                
+                <a th:href="@{/product}" style="background: linear-gradient(135deg, #6b7280, #4b5563); border: none; color: white; border-radius: 8px; padding: 10px 18px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: flex; align-items: center; white-space: nowrap;">
+                    ↺ Đặt lại
+                </a>
+            </form>
+
+            <!-- Quick Filter Buttons -->
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <a th:href="@{/product/filter/stock(inStock=true)}" 
+                   style="background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #166534; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 0.9rem; transition: all 0.3s ease;">
+                    ✅ Còn hàng
+                </a>
+                
+                <a th:href="@{/product/filter/stock(inStock=false)}" 
+                   style="background: linear-gradient(135deg, #fee2e2, #fecaca); color: #991b1b; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 0.9rem; transition: all 0.3s ease;">
+                    ❌ Hết hàng
+                </a>
+
+                <!-- Price Range Quick Filters -->
+                <a th:href="@{/product/filter/price(minPrice=0,maxPrice=100000)}" 
+                   style="background: linear-gradient(135deg, #e0e7ff, #ddd6fe); color: #4c1d95; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 0.9rem; transition: all 0.3s ease;">
+                   💰 Dưới 100K
+                </a>
+
+                <a th:href="@{/product/filter/price(minPrice=100000,maxPrice=500000)}" 
+                   style="background: linear-gradient(135deg, #e0e7ff, #ddd6fe); color: #4c1d95; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 0.9rem; transition: all 0.3s ease;">
+                   💰 100K - 500K
+                </a>
+
+                <a th:href="@{/product/filter/price(minPrice=500000,maxPrice=999999999)}" 
+                   style="background: linear-gradient(135deg, #e0e7ff, #ddd6fe); color: #4c1d95; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 0.9rem; transition: all 0.3s ease;">
+                   💰 Trên 500K
+                </a>
+            </div>
+
+            <!-- Search Status -->
+            <div th:if="${searchType}" style="margin-top: 12px; color: #666; font-size: 0.9rem; font-style: italic;">
+                📊 <span th:text="${searchType}"></span>
+            </div>
+        </div>
+
+        <!-- Product Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width: 60px;">ID</th>
+                    <th>Tên sản phẩm</th>
+                    <th style="width: 120px;">Giá (VNĐ)</th>
+                    <th style="width: 120px;">Tồn kho</th>
+                    <th style="width: 200px;">Thao tác</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="p : ${products}">
+                    <td><strong th:text="${p.id}"></strong></td>
+                    <td>
+                        <a class="product-name" th:href="@{'/product/' + ${p.id}}" th:text="${p.name}"></a>
+                    </td>
+                    <td th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                    <td>
+                        <span th:class="'stock-badge ' + (${p.inStock} ? 'stock-available' : 'stock-unavailable')">
+                            <span th:if="${p.inStock}">✅ Còn hàng</span>
+                            <span th:unless="${p.inStock}">❌ Hết hàng</span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <!-- ADMIN ACTIONS -->
+                        <span th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                            <a class="action-button btn-edit" th:href="@{'/product/edit/' + ${p.id}}">✏️ Sửa</a>
+                            <a class="action-button btn-delete" th:href="@{'/product/delete/' + ${p.id}}"
+                               onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này không?')">🗑️ Xóa</a>
+                        </span>
+
+                        <!-- CUSTOMER ADD TO CART -->
+                        <span th:if="${#authorization.expression('hasRole(''CUSTOMER'')')}">
+                            <form th:action="@{/cart/add}" method="post" style="display:inline;">
+                                <input type="hidden" name="productId" th:value="${p.id}" />
+                                <button type="submit" class="btn-add-cart">🛒 Thêm vào giỏ</button>
+                            </form>
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            © 2025 CoffeeHouse Management System — Giao diện Modern & Responsive
+        </div>
+    </div>
+</div>
+
+<!-- AI CHATBOX FIXED -->
+<button class="ai-chatbox-button" id="chatboxBtn" type="button">
+    <span style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">💬</span>
+</button>
+
+<div class="ai-chatbox-container" id="chatboxContainer">
+    <div class="chatbox-header">
+        <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+            <span>🤖</span>
+            AI Assistant
+        </h3>
+        <button class="chatbox-close-btn" id="closeBtn" type="button">✕</button>
+    </div>
+    <div class="chatbox-messages" id="chatMessages"></div>
+    <div class="chatbox-input-area">
+        <input 
+            type="text" 
+            id="chatInput" 
+            placeholder="Nhập câu hỏi..."
+            autocomplete="off"
+        />
+        <button class="chatbox-send-btn" id="chatSendBtn" type="button">➤</button>
+    </div>
+</div>
+
+<script>
+    // Toggle chatbox
+    document.getElementById('chatboxBtn').addEventListener('click', function() {
+        document.getElementById('chatboxContainer').classList.toggle('active');
+    });
+
+    document.getElementById('closeBtn').addEventListener('click', function() {
+        document.getElementById('chatboxContainer').classList.remove('active');
+    });
+
+    // Send message
+    const chatInput = document.getElementById('chatInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const chatMessages = document.getElementById('chatMessages');
+
+    function addMessage(text, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chatbox-message ${isUser ? 'user' : 'ai'}`;
+        messageDiv.innerHTML = `<div class="message-bubble ${isUser ? 'user' : 'ai'}">${escapeHtml(text)}</div>`;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        // Add user message
+        addMessage(message, true);
+        chatInput.value = '';
+
+        // Show loading state
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'chatbox-message ai';
+        loadingDiv.innerHTML = '<div class="message-bubble ai">Đang xử lý...</div>';
+        chatMessages.appendChild(loadingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Send to server (ensure correct API and robust JSON handling)
+        fetch('/api/ai/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(async (response) => {
+            const ct = response.headers.get('content-type') || '';
+            if (!response.ok) {
+                // Try to extract text for better error message
+                const text = await response.text().catch(() => '');
+                throw new Error('HTTP ' + response.status + (text ? ' - ' + text.substring(0, 120) : ''));
+            }
+            if (!ct.includes('application/json')) {
+                const text = await response.text().catch(() => '');
+                throw new Error("Unexpected non-JSON response: " + (text ? text.substring(0, 120) : 'no content'));
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Remove loading state
+            loadingDiv.remove();
+            // Add AI response
+            addMessage(data.reply, false);
+        })
+        .catch(error => {
+            loadingDiv.remove();
+            addMessage('❌ Lỗi: ' + error.message, false);
+        });
+    }
+
+    chatSendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+</script>
+
+</body>
+</html>

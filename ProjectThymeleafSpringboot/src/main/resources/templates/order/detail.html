@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết hóa đơn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .detail-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .detail-card h2 {
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .detail-card h3 {
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .info-group {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #334155;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #475569;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 2rem 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-bottom: 2px solid var(--border);
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 700;
+            color: #334155;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid var(--border);
+            color: #475569;
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 2px;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-add {
+            background: var(--success);
+        }
+
+        .btn-add:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-edit {
+            background: var(--info);
+        }
+
+        .btn-edit:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: var(--danger);
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 12px;
+            border: 2px dashed var(--border);
+        }
+
+        .add-line-section {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .total-info {
+            background: linear-gradient(135deg, #e0f2fe, #cffafe);
+            border-left: 4px solid var(--info);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            color: #0369a1;
+        }
+
+        @media (max-width: 768px) {
+            .detail-card {
+                padding: 1.5rem;
+            }
+
+            .detail-card h2 {
+                font-size: 1.2rem;
+            }
+
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+
+            .info-value {
+                font-size: 1rem;
+            }
+
+            .action-btn {
+                display: block;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="detail-wrapper">
+    <div class="detail-card">
+        <h2>📑 Chi tiết Hóa đơn</h2>
+
+        <div class="info-group">
+            <div class="info-label">🆔 Mã hóa đơn</div>
+            <div class="info-value" th:text="${order.id}"></div>
+        </div>
+
+        <div class="info-group">
+            <div class="info-label">📅 Ngày tạo</div>
+            <div class="info-value" th:text="${#temporals.format(order.date, 'dd/MM/yyyy')}"></div>
+        </div>
+
+        <div class="info-group">
+            <div class="info-label">👤 Khách hàng</div>
+            <div class="info-value" th:text="${order.customer.name}"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3>📦 Chi tiết sản phẩm trong hóa đơn</h3>
+
+        <!-- Add OrderLine Button (Admin only) -->
+        <div class="add-line-section" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+            <a th:href="@{'/order/' + ${order.id} + '/orderline/add'}" class="action-btn btn-add">
+                ➕ Thêm sản phẩm
+            </a>
+        </div>
+
+        <!-- OrderLines Table -->
+        <div class="table-wrapper" th:if="${!#lists.isEmpty(orderLines)}">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width: 60px;">ID</th>
+                    <th>Tên sản phẩm</th>
+                    <th style="width: 100px;">Số lượng</th>
+                    <th style="width: 130px;">Giá mua (VNĐ)</th>
+                    <th style="width: 130px;">Thành tiền (VNĐ)</th>
+                    <th th:if="${#authorization.expression('hasRole(''ADMIN'')')}" style="width: 180px;">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="line : ${orderLines}">
+                    <td th:text="${line.id}"></td>
+                    <td th:text="${line.product.name}"></td>
+                    <td th:text="${line.amount}"></td>
+                    <td th:text="${#numbers.formatDecimal(line.purchasePrice, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${#numbers.formatDecimal(line.purchasePrice * line.amount, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                        <a th:href="@{'/order/' + ${order.id} + '/orderline/edit/' + ${line.id}}" 
+                           class="action-btn btn-edit">
+                            ✏️ Sửa
+                        </a>
+                        <a th:href="@{'/order/' + ${order.id} + '/orderline/delete/' + ${line.id}}" 
+                           class="action-btn btn-delete"
+                           onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này khỏi hóa đơn?')">
+                            🗑️ Xóa
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" th:if="${#lists.isEmpty(orderLines)}">
+            <div style="font-size: 2rem; margin-bottom: 10px;">📭</div>
+            <p>Chưa có sản phẩm nào trong hóa đơn này</p>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
+            <a th:href="@{/order}" class="back-link" style="margin: 0; text-align: center;">⬅ Quay lại danh sách</a>
+            <a href="/" class="back-link" style="margin: 0; text-align: center;">🏠 Trang chủ</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

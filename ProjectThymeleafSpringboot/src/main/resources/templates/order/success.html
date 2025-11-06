@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ Đặt hàng thành công</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .success-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        h1 {
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn-continue {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-continue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-home {
+            display: block;
+            margin-top: 15px;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-home:hover {
+            color: #6366f1;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .success-card {
+                padding: 2rem;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            .success-icon {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="success-card">
+    <div class="success-icon">🎉</div>
+    <h1>Đặt hàng thành công!</h1>
+    <p class="success-message">
+        Cảm ơn bạn đã tin tưởng và mua hàng tại CoffeeHouse ❤️<br>
+        <small>Đơn hàng của bạn sẽ được xử lý sớm nhất</small>
+    </p>
+    <a href="/product" class="btn-continue">🛍️ Tiếp tục mua hàng</a>
+    <a href="/" class="btn-home">⬅ Quay lại trang chủ</a>
+</div>
+
+</body>
+</html>
