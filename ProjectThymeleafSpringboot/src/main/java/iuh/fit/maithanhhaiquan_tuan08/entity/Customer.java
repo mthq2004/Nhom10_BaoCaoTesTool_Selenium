@@ -26,7 +26,7 @@ public class Customer {
     @Pattern(regexp = "^[A-Z].*", message = "Tên khách hàng phải bắt đầu bằng chữ hoa")
     private String name;
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate customerSince;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
